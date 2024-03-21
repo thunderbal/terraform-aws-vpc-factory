@@ -1,12 +1,13 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.86.0
+    rev: v1.88.2
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
       - id: terraform_docs
         args:
-          - '--args=--lockfile=false'
+          - --hook-config=--add-to-existing-file=true
+          - --hook-config=--create-file-if-not-exist=true
       - id: terraform_tflint
         args:
           - '--args=--only=terraform_deprecated_interpolation'

@@ -11,8 +11,7 @@ terraform init
 terraform plan
 terraform apply
 ```
-
-<!-- BEGIN_TF_DOCS -->
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
@@ -43,4 +42,4 @@ No inputs.
 | Name | Description |
 |------|-------------|
 | <a name="output_module"></a> [module](#output\_module) | VPC module outputs |
-<!-- END_TF_DOCS -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
