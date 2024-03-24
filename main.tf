@@ -1,44 +1,31 @@
-terraform {
-  required_version = ">=1.0.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">=4.0"
-    }
-  }
-}
+# main.tf
 
 data "aws_availability_zones" "current" {
   state = "available"
 }
 
-resource "aws_vpc" "self" {
-  cidr_block = var.cidr_block
-}
+locals {
+  # global
+  availability_zones = var.availability_zones == null ? data.aws_availability_zones.current.names : var.availability_zones
 
-resource "aws_default_route_table" "self" {
-  default_route_table_id = aws_vpc.self.default_route_table_id
+  # vpc
+  vpc_name = join("-", compact([var.prefix, "vpc"]))
 
-  route = []
-}
+  # subnets
+  subnet_newbits = ceil(log(length(local.availability_zones), 2))
+  subnets_attributes = merge(flatten([
+    for k, v in var.subnet_groups : [
+      for i, z in local.availability_zones : {
+        join("-", [k, z]) = {
+          availability_zone = z
+          subnet_group      = k
+          public            = v.public
+          cidr_block        = cidrsubnet(v.cidr_block, local.subnet_newbits, i)
+        }
+      }
+    ]
+  ])...)
 
-resource "aws_default_network_acl" "self" {
-  default_network_acl_id = aws_vpc.self.default_network_acl_id
-}
-
-resource "aws_default_security_group" "self" {
-  vpc_id = aws_vpc.self.id
-}
-
-resource "aws_default_vpc_dhcp_options" "default" {
-  lifecycle {
-    ignore_changes = [tags_all]
-  }
-}
-
-resource "aws_subnet" "public" {
-  for_each = var.public_subnets
-
-  vpc_id = aws_vpc.self.id
+  # internet gateway
+  public_enabled = contains([for g in var.subnet_groups : g.public], true)
 }

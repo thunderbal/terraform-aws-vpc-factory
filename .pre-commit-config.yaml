@@ -1,28 +1,24 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.88.2
+    rev: v1.88.3
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
+      - id: terraform_tflint
+        args:
+          - '--args=--recursive'
       - id: terraform_docs
         args:
           - --hook-config=--add-to-existing-file=true
           - --hook-config=--create-file-if-not-exist=true
-      - id: terraform_tflint
+      - id: terraform_checkov
         args:
-          - '--args=--only=terraform_deprecated_interpolation'
-          - '--args=--only=terraform_deprecated_index'
-          - '--args=--only=terraform_unused_declarations'
-          - '--args=--only=terraform_comment_syntax'
-          - '--args=--only=terraform_documented_outputs'
-          - '--args=--only=terraform_documented_variables'
-          - '--args=--only=terraform_typed_variables'
-          - '--args=--only=terraform_module_pinned_source'
-          - '--args=--only=terraform_naming_convention'
-          - '--args=--only=terraform_required_version'
-          - '--args=--only=terraform_required_providers'
-          - '--args=--only=terraform_standard_module_structure'
-          - '--args=--only=terraform_workspace_remote'
+          - '--args=--quiet'
+          - '--args=--skip-check CKV_AWS_229' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 21
+          - '--args=--skip-check CKV_AWS_230' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 20
+          - '--args=--skip-check CKV_AWS_231' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 3389
+          - '--args=--skip-check CKV_AWS_232' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 22
+          - '--args=--skip-check CKV_AWS_352' # Ensure NACL ingress does not allow all Ports
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

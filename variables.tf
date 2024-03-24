@@ -1,33 +1,32 @@
+# variables.tf
+
+variable "prefix" {
+  description = "Value used to prefix resources name."
+  type        = string
+  default     = "noname"
+}
+
 variable "cidr_block" {
   description = "The IPv4 CIDR block for the VPC."
   type        = string
-  default     = "10.0.0.0/16"
 }
 
-# variable "public_cidr_block" {
-#   description = "Alternate CIDR block "
-#   type        = string
-#   default     = ""
-# }
+variable "availability_zones" {
+  description = "Target availability zones."
+  type        = list(string)
+  default     = null
+}
 
-# variable "internal_cidr_block" {
-#   description = "value"
-#   type        = string
-#   default     = ""
-# }
+variable "network_acl_disabled" {
+  description = "If disabled, default Network ACLs allow all inbound and outbound protocols."
+  type        = bool
+  default     = true
+}
 
-variable "public_subnets" {
-  description = "Map of public subnets"
+variable "subnet_groups" {
+  description = "One subnet in each availablity zone is created per subnet group."
   type = map(object({
     cidr_block = string
+    public     = optional(bool, false)
   }))
-  default = {}
 }
-
-# variable "private_subnets" {
-
-# }
-
-# variable "internal_subnets" {
-
-# }
