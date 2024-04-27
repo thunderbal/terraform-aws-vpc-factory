@@ -26,7 +26,7 @@ variable "network_acl_disabled" {
 variable "subnet_groups" {
   description = "One subnet in each availablity zone is created per subnet group."
   type = map(object({
-    cidr_block = string
-    public     = optional(bool, false)
+    cidr_block    = string
+    default_route = optional(string, "")
   }))
 }

@@ -6,7 +6,7 @@ resource "aws_vpc" "self" {
   enable_dns_support   = true
 
   tags = {
-    Name = local.vpc_name
+    Name = join("-", compact([var.prefix, "vpc"]))
   }
 }
 

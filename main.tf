@@ -5,11 +5,7 @@ data "aws_availability_zones" "current" {
 }
 
 locals {
-  # global
   availability_zones = var.availability_zones == null ? data.aws_availability_zones.current.names : var.availability_zones
-
-  # vpc
-  vpc_name = join("-", compact([var.prefix, "vpc"]))
 
   # subnets
   subnet_newbits = ceil(log(length(local.availability_zones), 2))
@@ -19,7 +15,7 @@ locals {
         join("-", [k, z]) = {
           availability_zone = z
           subnet_group      = k
-          public            = v.public
+          default_route     = v.default_route
           cidr_block        = cidrsubnet(v.cidr_block, local.subnet_newbits, i)
         }
       }
@@ -27,5 +23,13 @@ locals {
   ])...)
 
   # internet gateway
-  public_enabled = contains([for g in var.subnet_groups : g.public], true)
+  internet_gateway_enabled = contains([for g in local.subnets_attributes : g.default_route == "internet_gateway"], true)
+
+  # NAT gateways
+  nat_subnet_groups = distinct([for k, v in var.subnet_groups : trimprefix(v.default_route, "nat_gateway.") if startswith(v.default_route, "nat_gateway")])
+  nat_gateways = toset(flatten([
+    for k in local.nat_subnet_groups : [
+      for i, z in local.availability_zones : join("-", [k, z])
+    ]
+  ]))
 }
