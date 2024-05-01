@@ -7,7 +7,7 @@ resource "aws_subnet" "self" {
   availability_zone = each.value.availability_zone
 
   tags = {
-    Name = join("-", compact([var.prefix, each.key]))
+    Name = join("-", compact([local.prefix_name, each.key]))
   }
 }
 

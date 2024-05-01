@@ -1,23 +1,40 @@
 # Terraform module - VPC Factory
 
+Terraform VPC factory module creates a VPC with as many subnet tiers as described in subnet_groups attribute.
+For each subnet tier, a subnet is created in each selectec availability zones in availability_zones attribute.
+If these attributes are not specified, 2 tiers are creates : public and private in the 2 first availability
+zones of the current AWS region.An Internet Gateway is configured as default route for public tier's subnets
+and a NAT Gateway in each public subnets is created and configured as default route for private tier's subnets.
+
+The default CIDR block for VPC is 10.0.0.0/16, but it can be customized with cidr_block.
+
+By default, Network ACLs are configured to allow all ingress/egress.
+
 ## Usage
 
 ```
+# Defaults
 module "network" {
-  source = "git:https://gitea.fillon.info/terraform-modules/terraform-aws-vpc-factory?ref=main"
+  source = "git:https://github.com/thunderbal/terraform-aws-vpc-factory?ref=main"
+}
 
-  prefix               = "example"
+
+# Custom example
+module "network" {
+  source = "git:https://github.com/thunderbal/terraform-aws-vpc-factory?ref=main"
+
+  prefix_name          = "example"
   cidr_block           = "10.0.0.0/16"
   availability_zones   = ["eu-west-1a", "eu-west-1b"]
   network_acl_disabled = true
 
   subnet_groups = {
     dmz = {
-      default_route = "internet_gateway"
+      default_route = "igw"
       cidr_block    = "10.0.0.0/26"
     }
     frontend = {
-      default_route = "nat_gateway.pub"
+      default_route = "ngw/pub"
       cidr_block = "10.0.16.0/20"
     }
     backend = {
@@ -29,13 +46,13 @@ module "network" {
 
 By default, Network ACLs allow alltrafic. Set __network_acl_disabled__ to __false__ to block all trafic by default.
 
-__prefix__ is used in tag Name to identify resources created by this module.
+__prefix_name__ is used in tag Name to identify resources created by this module.
 
-If __availability_zones__ is not specified, module use all availability zones in the target region.
+If __availability_zones__ is not specified, module use 2 availability zones in the target region.
 
-__cidr_block__ is mandatory for VPC, all subnet_groups must be given a __cidr_block__ which wil be cut
-into several sub-blocks to have a subnet per availability zone on each groups. Group's __cidr_block_
-must not overlap each others and must be included into VPC's __cidr_block__.
+All subnet_groups must be given a __cidr_block__ within __cidr_bloc__ (default 10.0.0.0/16) provided
+to the module. Each block which wil be cut into several sub-blocks to have a subnet per availability
+zone for each groups. Group's __cidr_block__ must not overlap each others .
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -79,16 +96,16 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | Target availability zones. | `list(string)` | `null` | no |
-| <a name="input_cidr_block"></a> [cidr\_block](#input\_cidr\_block) | The IPv4 CIDR block for the VPC. | `string` | n/a | yes |
+| <a name="input_cidr_block"></a> [cidr\_block](#input\_cidr\_block) | The IPv4 CIDR block for the VPC. | `string` | `null` | no |
 | <a name="input_network_acl_disabled"></a> [network\_acl\_disabled](#input\_network\_acl\_disabled) | If disabled, default Network ACLs allow all inbound and outbound protocols. | `bool` | `true` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Value used to prefix resources name. | `string` | `"noname"` | no |
-| <a name="input_subnet_groups"></a> [subnet\_groups](#input\_subnet\_groups) | One subnet in each availablity zone is created per subnet group. | <pre>map(object({<br>    cidr_block    = string<br>    default_route = optional(string, "")<br>  }))</pre> | n/a | yes |
+| <a name="input_prefix_name"></a> [prefix\_name](#input\_prefix\_name) | Value used to prefix resources name. | `string` | `null` | no |
+| <a name="input_subnet_groups"></a> [subnet\_groups](#input\_subnet\_groups) | One subnet in each availablity zone is created per subnet group. | <pre>map(object({<br>    cidr_block    = string<br>    default_route = optional(string, "")<br>  }))</pre> | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_aws_availability_zones"></a> [aws\_availability\_zones](#output\_aws\_availability\_zones) | List of available AZ names. |
-| <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | Lisr of public subnet IDs. |
+| <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | Map of public subnet IDs. |
 | <a name="output_vpc"></a> [vpc](#output\_vpc) | value |
 <!-- END_TF_DOCS -->

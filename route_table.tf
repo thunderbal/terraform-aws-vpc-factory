@@ -5,7 +5,7 @@ resource "aws_route_table" "self" {
   vpc_id   = aws_vpc.self.id
 
   dynamic "route" {
-    for_each = each.value.default_route == "internet_gateway" ? toset([0]) : []
+    for_each = each.value.default_route == "igw" ? toset([0]) : []
     content {
       cidr_block = "0.0.0.0/0"
       gateway_id = aws_internet_gateway.self[route.value].id
@@ -13,7 +13,7 @@ resource "aws_route_table" "self" {
   }
 
   dynamic "route" {
-    for_each = startswith(each.value.default_route, "nat_gateway.") ? toset([trimprefix(each.value.default_route, "nat_gateway.")]) : []
+    for_each = startswith(each.value.default_route, "ngw/") ? toset([basename(each.value.default_route)]) : []
     content {
       cidr_block     = "0.0.0.0/0"
       nat_gateway_id = aws_nat_gateway.self[join("-", [route.value, each.value.availability_zone])].id
@@ -21,7 +21,7 @@ resource "aws_route_table" "self" {
   }
 
   tags = {
-    Name = join("-", compact([var.prefix, each.key]))
+    Name = join("-", compact([local.prefix_name, each.key]))
   }
 }
 
