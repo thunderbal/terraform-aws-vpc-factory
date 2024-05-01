@@ -10,5 +10,5 @@ output "vpc" {
 
 output "subnet_ids" {
   description = "Map of public subnet IDs."
-  value       = { for g in keys(var.subnet_groups) : g => [for k, v in local.subnets_attributes : aws_subnet.self[k].id if g == v.subnet_group] }
+  value       = { for g in keys(local.nets) : g => [for k, v in local.subnets_attributes : aws_subnet.self[k].id if g == v.subnet_group] }
 }

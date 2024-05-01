@@ -1,12 +1,12 @@
 # vpc.tf
 
 resource "aws_vpc" "self" {
-  cidr_block           = var.cidr_block
+  cidr_block           = local.cidr_block
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name = join("-", compact([var.prefix, "vpc"]))
+    Name = join("-", compact([local.prefix_name, "vpc"]))
   }
 }
 
@@ -15,7 +15,7 @@ resource "aws_default_route_table" "self" {
   route                  = []
 
   tags = {
-    Name = join("-", compact([var.prefix, "default"]))
+    Name = join("-", compact([local.prefix_name, "default"]))
   }
 }
 
@@ -23,7 +23,7 @@ resource "aws_default_network_acl" "self" {
   default_network_acl_id = aws_vpc.self.default_network_acl_id
 
   tags = {
-    Name = join("-", compact([var.prefix, "nacl"]))
+    Name = join("-", compact([local.prefix_name, "nacl"]))
   }
 
   lifecycle {
@@ -55,7 +55,7 @@ resource "aws_default_security_group" "self" {
   vpc_id = aws_vpc.self.id
 
   tags = {
-    Name = join("-", compact([var.prefix, "default", "sg"]))
+    Name = join("-", compact([local.prefix_name, "default", "sg"]))
   }
 }
 
