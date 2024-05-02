@@ -5,24 +5,22 @@ data "aws_availability_zones" "current" {
 }
 
 locals {
+  config_file = "${path.module}/config/default.yaml"
+  config      = yamldecode(file(local.config_file))
   # Configure defaults when attributes are not defined
-  prefix_name = var.prefix_name != null ? var.prefix_name : basename(path.cwd)
-  cidr_block  = var.cidr_block != null ? var.cidr_block : "10.0.0.0/16"
-  azs         = var.availability_zones != null ? var.availability_zones : slice(data.aws_availability_zones.current.names, 0, 2)
-
-  nets = var.subnet_groups != null ? var.subnet_groups : {
-    public = {
-      cidr_block    = cidrsubnet(local.cidr_block, 1, 0)
-      default_route = "igw"
-    }
-    private = {
-      cidr_block    = cidrsubnet(local.cidr_block, 1, 1)
-      default_route = "ngw/public"
-    }
-  }
+  prefix_name = try(local.config.prefix_name, basename(path.cwd))
+  cidr_block  = try(local.config.cidr_block, "10.0.0.0/16")
+  azs_count   = min(try(local.config.max_azs, 5), length(data.aws_availability_zones.current.names))
+  azs         = try(local.config.availability_zones, slice(data.aws_availability_zones.current.names, 0, local.azs_count))
+  nets        = try(local.config.subnet_groups, {})
 
   # subnets
-  subnet_newbits = ceil(log(length(local.azs), 2))
+  nets_newbits = ceil(log(length(local.nets), 2))
+  azs_newbits  = ceil(log(length(local.azs), 2))
+
+  net_cidr_blocks = {
+    for i, v in keys(local.nets) : v => try(local.nets[v].cidr_block, cidrsubnet(local.cidr_block, local.nets_newbits, i))
+  }
 
   subnets_attributes = merge(flatten([
     for k, v in local.nets : [
@@ -30,18 +28,19 @@ locals {
         join("-", [k, z]) = {
           availability_zone = z
           subnet_group      = k
-          default_route     = v.default_route
-          cidr_block        = cidrsubnet(v.cidr_block, local.subnet_newbits, i)
+          default_route     = try(v.default_route, "")
+          cidr_block        = cidrsubnet(local.net_cidr_blocks[k], local.azs_newbits, i)
+          tags              = try(v.tags, { test : "none" })
         }
       }
     ]
   ])...)
 
   # internet gateway
-  igw_enabled = contains([for g in local.nets : g.default_route == "igw"], true)
+  igw_enabled = contains([for g in local.nets : try(g.default_route == "igw", false)], true)
 
   # NAT gateways
-  nat_subnet_groups = distinct([for k, v in local.nets : basename(v.default_route) if startswith(v.default_route, "ngw/")])
+  nat_subnet_groups = distinct([for g in local.nets : basename(g.default_route) if try(startswith(g.default_route, "ngw/"), false)])
   nat_gateways = toset(flatten([
     for k in local.nat_subnet_groups : [
       for i, z in local.azs : join("-", [k, z])

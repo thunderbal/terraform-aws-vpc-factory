@@ -1,0 +1,13 @@
+
+cidr_block: 10.0.0.0/16
+max_azs: 2
+
+subnet_groups:
+  public:
+    default_route: igw
+    tags:
+      kubernetes.io/role/elb: 1
+  private:
+    default_route: nat/public
+    tags:
+      kubernetes.io/role/internal-elb: 1
