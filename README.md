@@ -95,7 +95,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_network_acl_disabled"></a> [network\_acl\_disabled](#input\_network\_acl\_disabled) | If disabled, default Network ACLs allow all inbound and outbound protocols. | `bool` | `true` | no |
+| <a name="input_config_file"></a> [config\_file](#input\_config\_file) | Network configuration file. | `string` | `null` | no |
+| <a name="input_config_template"></a> [config\_template](#input\_config\_template) | value | `string` | `"default"` | no |
 
 ## Outputs
 

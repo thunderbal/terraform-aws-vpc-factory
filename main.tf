@@ -5,14 +5,16 @@ data "aws_availability_zones" "current" {
 }
 
 locals {
-  config_file = "${path.module}/config/default.yaml"
+  config_file = var.config_file == null ? "${path.module}/config/${var.config_template}.yaml" : var.config_file
   config      = yamldecode(file(local.config_file))
+
   # Configure defaults when attributes are not defined
-  prefix_name = try(local.config.prefix_name, basename(path.cwd))
-  cidr_block  = try(local.config.cidr_block, "10.0.0.0/16")
-  azs_count   = min(try(local.config.max_azs, 5), length(data.aws_availability_zones.current.names))
-  azs         = try(local.config.availability_zones, slice(data.aws_availability_zones.current.names, 0, local.azs_count))
-  nets        = try(local.config.subnet_groups, {})
+  prefix_name   = try(local.config.prefix_name, basename(path.cwd))
+  cidr_block    = try(local.config.cidr_block, "10.0.0.0/16")
+  azs_count     = min(try(local.config.max_azs, 2), length(data.aws_availability_zones.current.names))
+  azs           = try(local.config.availability_zones, slice(data.aws_availability_zones.current.names, 0, local.azs_count))
+  nets          = try(local.config.subnet_groups, {})
+  nacl_disabled = try(local.config.nacl_disabled, false)
 
   # subnets
   nets_newbits = ceil(log(length(local.nets), 2))

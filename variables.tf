@@ -1,7 +1,18 @@
 # variables.tf
 
-variable "network_acl_disabled" {
-  description = "If disabled, default Network ACLs allow all inbound and outbound protocols."
-  type        = bool
-  default     = true
+variable "config_file" {
+  description = "Network configuration file."
+  type        = string
+  default     = null
+}
+
+variable "config_template" {
+  description = "value"
+  type        = string
+  default     = "default"
+
+  validation {
+    condition     = contains(["default", "eks"], var.config_template)
+    error_message = "config_template must be one of 'default' 'eks'"
+  }
 }

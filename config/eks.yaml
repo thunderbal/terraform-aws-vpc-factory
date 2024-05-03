@@ -1,6 +1,7 @@
 
-cidr_block: 10.0.0.0/16
-max_azs: 2
+cidr_block: 10.2.0.0/16
+# max_azs: 2
+nacl_disabled: true
 
 subnet_groups:
   public:
@@ -8,6 +9,6 @@ subnet_groups:
     tags:
       kubernetes.io/role/elb: 1
   private:
-    default_route: nat/public
+    default_route: ngw/public
     tags:
       kubernetes.io/role/internal-elb: 1
