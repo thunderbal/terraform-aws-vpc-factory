@@ -10,5 +10,6 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "../.."
+  source          = "../.."
+  config_template = "eks"
 }

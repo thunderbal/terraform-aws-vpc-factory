@@ -32,7 +32,7 @@ resource "aws_default_network_acl" "self" {
 }
 
 resource "aws_network_acl_rule" "all_ingress" {
-  count          = var.network_acl_disabled == true ? 1 : 0
+  count          = local.nacl_disabled ? 1 : 0
   network_acl_id = aws_default_network_acl.self.id
   rule_number    = 100
   rule_action    = "allow"
@@ -42,7 +42,7 @@ resource "aws_network_acl_rule" "all_ingress" {
 }
 
 resource "aws_network_acl_rule" "all_egress" {
-  count          = var.network_acl_disabled ? 1 : 0
+  count          = local.nacl_disabled ? 1 : 0
   network_acl_id = aws_default_network_acl.self.id
   rule_number    = 100
   rule_action    = "allow"

@@ -1,0 +1,16 @@
+---
+# prefix_name:
+cidr_block: 10.2.0.0/16
+# max_azs: 2
+# availability_zones:
+nacl_disabled: true
+
+subnet_groups:
+  public:
+    default_route: igw
+    tags:
+      kubernetes.io/role/elb: 1
+  private:
+    default_route: ngw/public
+    tags:
+      kubernetes.io/role/internal-elb: 1

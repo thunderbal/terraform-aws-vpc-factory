@@ -66,7 +66,7 @@ zone for each groups. Group's __cidr_block__ must not overlap each others .
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.47.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.57.0 |
 
 ## Modules
 
@@ -95,11 +95,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | Target availability zones. | `list(string)` | `null` | no |
-| <a name="input_cidr_block"></a> [cidr\_block](#input\_cidr\_block) | The IPv4 CIDR block for the VPC. | `string` | `null` | no |
-| <a name="input_network_acl_disabled"></a> [network\_acl\_disabled](#input\_network\_acl\_disabled) | If disabled, default Network ACLs allow all inbound and outbound protocols. | `bool` | `true` | no |
-| <a name="input_prefix_name"></a> [prefix\_name](#input\_prefix\_name) | Value used to prefix resources name. | `string` | `null` | no |
-| <a name="input_subnet_groups"></a> [subnet\_groups](#input\_subnet\_groups) | One subnet in each availablity zone is created per subnet group. | <pre>map(object({<br>    cidr_block    = string<br>    default_route = optional(string, "")<br>  }))</pre> | `null` | no |
+| <a name="input_config_file"></a> [config\_file](#input\_config\_file) | Network configuration file. | `string` | `null` | no |
+| <a name="input_config_template"></a> [config\_template](#input\_config\_template) | value | `string` | `"default"` | no |
 
 ## Outputs
 

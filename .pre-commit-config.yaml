@@ -1,9 +1,12 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.89.1
+    rev: v1.92.0
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
+        args:
+          - --hook-config=--parallelism-limit=1
+          - --hook-config=--retry-once-with-cleanup=true
       - id: terraform_tflint
         args:
           - '--args=--recursive'
@@ -15,6 +18,7 @@ repos:
       - id: terraform_checkov
         args:
           - '--args=--quiet'
+          - '--args=--compact'
           - '--args=--skip-check CKV_AWS_229' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 21
           - '--args=--skip-check CKV_AWS_230' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 20
           - '--args=--skip-check CKV_AWS_231' # Ensure no NACL allow ingress from 0.0.0.0:0 to port 3389

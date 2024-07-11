@@ -6,9 +6,9 @@ resource "aws_subnet" "self" {
   cidr_block        = each.value.cidr_block
   availability_zone = each.value.availability_zone
 
-  tags = {
+  tags = merge(each.value.tags, {
     Name = join("-", compact([local.prefix_name, each.key]))
-  }
+  })
 }
 
 resource "aws_eip" "self" {

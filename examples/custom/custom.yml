@@ -1,0 +1,20 @@
+---
+# prefix_name: null
+cidr_block: 10.1.0.0/16
+max_azs: 3
+# availability_zones: null
+nacl_disabled: true
+
+subnet_groups:
+  dmz:
+    default_route: igw
+    tags:
+      tier: dmz
+  frontend:
+    default_route: ngw/dmz
+    tags:
+      tier: frontend
+  backend:
+    default_route: ngw/dmz
+    tags:
+      tier: backend

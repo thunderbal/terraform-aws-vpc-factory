@@ -1,0 +1,7 @@
+---
+# prefix_name:
+# cidr_block: 10.0.0.0/16
+# max_azs: 2
+# availability_zones:
+# nacl_disabled: false
+# subnet_groups: {}
