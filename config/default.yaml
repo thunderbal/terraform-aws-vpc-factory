@@ -1,9 +1,7 @@
-cidr_block: 10.1.0.0/16
+---
+# prefix_name:
+# cidr_block: 10.0.0.0/16
 # max_azs: 2
-nacl_disabled: true
-
-subnet_groups:
-  public:
-    default_route: igw
-  private:
-    default_route: ngw/public
+# availability_zones:
+# nacl_disabled: false
+# subnet_groups: {}

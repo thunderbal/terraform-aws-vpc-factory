@@ -13,8 +13,8 @@ locals {
   cidr_block    = try(local.config.cidr_block, "10.0.0.0/16")
   azs_count     = min(try(local.config.max_azs, 2), length(data.aws_availability_zones.current.names))
   azs           = try(local.config.availability_zones, slice(data.aws_availability_zones.current.names, 0, local.azs_count))
-  nets          = try(local.config.subnet_groups, {})
   nacl_disabled = try(local.config.nacl_disabled, false)
+  nets          = try(local.config.subnet_groups, {})
 
   # subnets
   nets_newbits = ceil(log(length(local.nets), 2))

@@ -1,16 +1,18 @@
-# Minimum VPC Factory
+# EKS VPC Factory
 
 Configuration in this directory creates a VPC with 2 groups of subnets named __public__ and __private__.
 1 subnet per availability zone in the region is created on each group. Cidr block for each subnet in the
 group is calculated automaticaly based on the group __cidr_block__ and the numbre of availability zone used.
 
-The group named __public__ is declared as public with its default route through Internet Gatewat.
+The group named __public__ is declared as public with its default route through Internet Gateway.
 
 The group named __private__ has a default route to a NAT Gateway in __public__ subnets group. That means a NAT
 Gateway will be created in each __public__ subnets as target default route in route tables of __private__ subnets.
 
 __network_acl_disabled__ is set to __true__ becsause in this exemple we don't want to manage Network ACLs.
 That way, the VPC default Network ACL is configure with ingress and egress rules whitch are allowing all trafic.
+
+Additional tags are added to subnets in order to identify subnets elligible for ALB/NLB.
 
 ## Usage
 

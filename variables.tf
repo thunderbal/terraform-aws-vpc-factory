@@ -12,7 +12,7 @@ variable "config_template" {
   default     = "default"
 
   validation {
-    condition     = contains(["default", "eks"], var.config_template)
+    condition     = contains(["default", "standard", "eks"], var.config_template)
     error_message = "config_template must be one of 'default' 'eks'"
   }
 }
