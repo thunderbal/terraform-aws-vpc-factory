@@ -19,28 +19,19 @@ module "network" {
 }
 
 
-# Custom example
+# Example using a predefined template config file
 module "network" {
   source = "git:https://github.com/thunderbal/terraform-aws-vpc-factory?ref=main"
 
-  prefix_name          = "example"
-  cidr_block           = "10.0.0.0/16"
-  availability_zones   = ["eu-west-1a", "eu-west-1b"]
-  network_acl_disabled = true
+  config_template = "standard"
+}
 
-  subnet_groups = {
-    dmz = {
-      default_route = "igw"
-      cidr_block    = "10.0.0.0/26"
-    }
-    frontend = {
-      default_route = "ngw/pub"
-      cidr_block = "10.0.16.0/20"
-    }
-    backend = {
-      cidr_block = "10.0.32.0/20"
-    }
-  }
+# Example using a custom config file
+# Use one of files in config folder as base for my_config.yml
+module "network" {
+  source = "git:https://github.com/thunderbal/terraform-aws-vpc-factory?ref=main"
+
+  config_file = "./my_config.yml"
 }
 ```
 
